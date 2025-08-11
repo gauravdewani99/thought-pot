@@ -214,12 +214,9 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
             )} />
           </div>
           
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">
-              {isDragActive ? "Drop files to upload" : "Upload notes"}
-            </h3>
-            <p className="text-muted-foreground">
-              Drag files here or click to browse
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Drop files or click to upload
             </p>
           </div>
 

@@ -141,7 +141,7 @@ export const NotesUploader = ({
       case 'zip':
         return <Archive className="w-4 h-4" />;
       case 'pdf':
-        return <FileText className="w-4 h-4 text-red-500" />;
+        return;
       case 'md':
         return <FileText className="w-4 h-4 text-blue-500" />;
       case 'png':
@@ -151,7 +151,7 @@ export const NotesUploader = ({
       case 'bmp':
         return <ImageIcon className="w-4 h-4 text-green-500" />;
       default:
-        return <FileText className="w-4 h-4" />;
+        return;
     }
   };
   const getStatusIcon = (status: UploadedFile['status']) => {

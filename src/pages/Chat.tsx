@@ -18,6 +18,7 @@ interface Message {
     snippet: string;
     folder?: string;
   }>;
+  isInitialAnswer?: boolean;
   timestamp: Date;
 }
 const Chat = () => {
@@ -63,16 +64,18 @@ const Chat = () => {
         }
       });
       if (error) throw error;
+      const hadAiBefore = messages.some(m => !m.isUser);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: data?.answer || "I couldn't generate an answer.",
         isUser: false,
-        sources: (data?.sources || []).map((s: any) => ({
-          noteId: s.noteId,
-          title: s.title,
-          snippet: s.snippet,
-          folder: s.folder
-        })),
+        sources: Array.from(
+          new Map(((data?.sources || []) as any[]).map((s: any) => [
+            s.noteId,
+            { noteId: s.noteId, title: s.title, snippet: s.snippet, folder: s.folder }
+          ])).values()
+        ),
+        isInitialAnswer: !hadAiBefore,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiMessage]);
@@ -130,7 +133,7 @@ const Chat = () => {
             <p className="text-sm text-muted-foreground">Type a question below to begin.</p>
           </Card>
         </div> : <div className="flex-1 overflow-y-auto">
-          {messages.map(message => <ChatMessage key={message.id} message={message.content} isUser={message.isUser} sources={message.sources} isStreaming={message.id === messages[messages.length - 1]?.id && isStreaming} />)}
+          {messages.map(message => <ChatMessage key={message.id} message={message.content} isUser={message.isUser} sources={message.sources} isStreaming={message.id === messages[messages.length - 1]?.id && isStreaming} showSources={!!message.isInitialAnswer} />)}
         </div>}
     </>}
   <ChatInput onSendMessage={handleSendMessage} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} disabled={!hasUploadedNotes} />

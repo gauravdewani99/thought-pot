@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+
 import { Card } from "@/components/ui/card";
-import { ExternalLink, FileText, User, Bot } from "lucide-react";
+import { FileText, User, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Source {
@@ -17,9 +17,11 @@ interface ChatMessageProps {
   isUser: boolean;
   sources?: Source[];
   isStreaming?: boolean;
+  showSources?: boolean;
 }
 
-export const ChatMessage = ({ message, isUser, sources, isStreaming }: ChatMessageProps) => {
+export const ChatMessage = ({ message, isUser, sources, isStreaming, showSources }: ChatMessageProps) => {
+  const uniqueSources = sources ? Array.from(new Map(sources.map(s => [s.noteId, s])).values()) : [];
   return (
     <div className={cn("flex gap-4 p-6 animate-fade-in", isUser ? "justify-end" : "justify-start")}>
       {!isUser && (
@@ -45,29 +47,17 @@ export const ChatMessage = ({ message, isUser, sources, isStreaming }: ChatMessa
           </div>
         </Card>
 
-        {sources && sources.length > 0 && (
-          <div className="space-y-2 animate-fade-in">
-            <p className="text-xs text-muted-foreground font-medium">Sources from your Notes:</p>
-            <div className="flex flex-wrap gap-2">
-              {sources.map((source) => (
-                <Badge
-                  key={source.noteId}
-                  variant="secondary"
-                  className="flex items-center gap-2 p-2 shadow-soft hover:shadow-medium transition-all cursor-pointer hover-scale animate-scale-in"
-                  style={{ animationDelay: `${Math.random() * 0.3}s` }}
-                >
-                  <FileText className="w-3 h-3" />
-                  <span className="font-medium">{source.title}</span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-4 w-4 p-0 hover:bg-accent/20"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
+        {showSources && uniqueSources.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <FileText className="w-3 h-3" />
+              Source
+            </span>
+            {uniqueSources.map((source) => (
+              <Badge key={source.noteId} variant="secondary" className="px-2 py-0.5">
+                {source.title}
+              </Badge>
+            ))}
           </div>
         )}
       </div>

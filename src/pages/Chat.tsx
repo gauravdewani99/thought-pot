@@ -90,28 +90,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-secondary flex flex-col relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <AnimatedOrb 
-        variant="primary" 
-        size="lg" 
-        className="top-20 left-10 animate-float opacity-30" 
-        style={{ animationDelay: "0s" }}
-      />
-      <AnimatedOrb 
-        variant="accent" 
-        size="md" 
-        className="top-60 right-20 animate-float opacity-20" 
-        style={{ animationDelay: "2s" }}
-      />
-      <AnimatedOrb 
-        variant="secondary" 
-        size="sm" 
-        className="bottom-40 left-1/3 animate-float opacity-25" 
-        style={{ animationDelay: "4s" }}
-      />
-      
-      <ShimmerEffect className="absolute inset-0 pointer-events-none" />
+    <div className="min-h-screen bg-gradient-secondary flex flex-col relative">
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-sm shadow-soft relative z-10">
         <div className="max-w-6xl mx-auto px-6 py-4">

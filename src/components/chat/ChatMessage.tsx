@@ -1,9 +1,10 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-
 import { Card } from "@/components/ui/card";
 import { FileText, User, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Source {
   noteId: string;
@@ -40,7 +41,25 @@ export const ChatMessage = ({ message, isUser, sources, isStreaming, showSources
             : "bg-chat-ai text-chat-ai-foreground"
         )}>
           <div className="prose prose-sm max-w-none">
-            {message}
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                ol: ({ children, ...props }) => (
+                  <ol className="list-decimal pl-5 space-y-1" {...props}>{children}</ol>
+                ),
+                ul: ({ children, ...props }) => (
+                  <ul className="list-disc pl-5 space-y-1" {...props}>{children}</ul>
+                ),
+                li: ({ children, ...props }) => (
+                  <li className="leading-relaxed" {...props}>{children}</li>
+                ),
+                p: ({ children, ...props }) => (
+                  <p className="mb-2" {...props}>{children}</p>
+                ),
+              }}
+            >
+              {message}
+            </ReactMarkdown>
             {isStreaming && (
               <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse opacity-70" />
             )}

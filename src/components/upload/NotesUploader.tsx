@@ -214,28 +214,16 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
             )} />
           </div>
           
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">
-              {isDragActive ? "Drop your Apple Notes here" : "Upload your Apple Notes"}
-            </h3>
-            <p className="text-muted-foreground">
-              Drag & drop or click to upload .zip, .md, .pdf, .rtf files and images
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            {isDragActive ? "Drop files to upload" : "Drop files or click to upload"}
+          </p>
 
-          <div className="flex flex-wrap gap-2 justify-center">
-            <Badge variant="secondary">.zip</Badge>
-            <Badge variant="secondary">.md</Badge>
-            <Badge variant="secondary">.pdf</Badge>
-            <Badge variant="secondary">.rtf</Badge>
-            <Badge variant="secondary">images</Badge>
-          </div>
         </div>
       </Card>
 
       {uploadedFiles.length > 0 && (
         <Card className="p-6 shadow-soft">
-          <h4 className="font-semibold mb-4">Uploaded Files</h4>
+          
           <div className="space-y-3">
             {uploadedFiles.map((file) => (
               <div key={file.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">

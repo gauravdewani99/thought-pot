@@ -520,7 +520,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      match_note_chunks: {
+        Args: { p_query_embedding: string; p_match_count?: number }
+        Returns: {
+          note_id: string
+          chunk_index: number
+          content: string
+          similarity: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

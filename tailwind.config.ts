@@ -18,6 +18,16 @@ export default {
 			}
 		},
 		extend: {
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-secondary': 'var(--gradient-secondary)',
+				'gradient-accent': 'var(--gradient-accent)',
+			},
+			boxShadow: {
+				'soft': 'var(--shadow-soft)',
+				'medium': 'var(--shadow-medium)',
+				'strong': 'var(--shadow-strong)',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -51,6 +61,14 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				'chat-user': {
+					DEFAULT: 'hsl(var(--chat-bubble-user))',
+					foreground: 'hsl(var(--chat-bubble-user-foreground))'
+				},
+				'chat-ai': {
+					DEFAULT: 'hsl(var(--chat-bubble-ai))',
+					foreground: 'hsl(var(--chat-bubble-ai-foreground))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

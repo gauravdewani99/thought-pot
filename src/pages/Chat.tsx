@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Brain, FileText, Sparkles, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
@@ -28,6 +29,15 @@ const Chat = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [hasUploadedNotes, setHasUploadedNotes] = useState(false);
   const { toast } = useToast();
+
+  const getClientId = () => {
+    let id = localStorage.getItem('demo_client_id');
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem('demo_client_id', id);
+    }
+    return id;
+  };
 
   const handleSendMessage = async (content: string) => {
     if (!hasUploadedNotes) {
@@ -49,32 +59,36 @@ const Chat = () => {
     setMessages(prev => [...prev, userMessage]);
     setIsStreaming(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.functions.invoke('chat-ask', {
+        body: { clientId: getClientId(), question: content },
+      });
+      if (error) throw error;
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I'd be happy to help you search through your Apple Notes! However, to provide accurate answers with proper source citations, I need you to connect this app to Supabase first for backend functionality including OpenAI integration and vector search.",
+        content: data?.answer || "I couldn't generate an answer.",
         isUser: false,
-        sources: [
-          {
-            noteId: "note-1",
-            title: "Project Ideas",
-            snippet: "Build a RAG chatbot using OpenAI and vector embeddings...",
-            folder: "Work"
-          },
-          {
-            noteId: "note-2", 
-            title: "Meeting Notes",
-            snippet: "Discussed implementation details for the new chat interface...",
-            folder: "Meetings"
-          }
-        ],
+        sources: (data?.sources || []).map((s: any) => ({
+          noteId: s.noteId,
+          title: s.title,
+          snippet: s.snippet,
+          folder: s.folder,
+        })),
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, aiMessage]);
+    } catch (err: any) {
+      console.error('chat-ask error', err);
+      toast({
+        title: "Chat error",
+        description: err.message || "Failed to get an answer.",
+        variant: "destructive",
+      });
+    } finally {
       setIsStreaming(false);
-    }, 2000);
+    }
   };
 
   const handleFilesUploaded = (files: File[]) => {

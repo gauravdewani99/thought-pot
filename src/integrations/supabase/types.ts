@@ -529,6 +529,19 @@ export type Database = {
           similarity: number
         }[]
       }
+      match_note_chunks_public: {
+        Args: {
+          p_user_id: string
+          p_query_embedding: string
+          p_match_count?: number
+        }
+        Returns: {
+          note_id: string
+          chunk_index: number
+          content: string
+          similarity: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

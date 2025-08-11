@@ -14,6 +14,7 @@ import {
   X 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UploadedFile {
   id: string;
@@ -32,6 +33,15 @@ interface NotesUploaderProps {
 export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
+  const getClientId = () => {
+    let id = localStorage.getItem('demo_client_id');
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem('demo_client_id', id);
+    }
+    return id;
+  };
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (disabled) return;
 
@@ -45,12 +55,47 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
     }));
 
     setUploadedFiles(prev => [...prev, ...newFiles]);
-    onFilesUploaded(acceptedFiles);
 
-    // Simulate upload progress
+    // Simulate upload progress visually while processing on the server
     newFiles.forEach((file) => {
       simulateUploadProgress(file.id);
     });
+
+    (async () => {
+      try {
+        const filesPayload = await Promise.all(
+          acceptedFiles
+            .filter((f) => (f.type && f.type.startsWith('text')) || f.name.toLowerCase().endsWith('.md') || f.name.toLowerCase().endsWith('.txt'))
+            .map(async (f) => ({
+              name: f.name,
+              type: f.type || 'text/plain',
+              content: await f.text(),
+            }))
+        );
+
+        const { data, error } = await supabase.functions.invoke('process-notes-upload', {
+          body: { clientId: getClientId(), files: filesPayload },
+        });
+        if (error) throw error;
+
+        setUploadedFiles(prev =>
+          prev.map(f => newFiles.find(nf => nf.id === f.id)
+            ? { ...f, status: 'completed', progress: 100 }
+            : f
+          )
+        );
+
+        onFilesUploaded(acceptedFiles);
+      } catch (e) {
+        console.error('process-notes-upload error', e);
+        setUploadedFiles(prev =>
+          prev.map(f => newFiles.find(nf => nf.id === f.id)
+            ? { ...f, status: 'error' }
+            : f
+          )
+        );
+      }
+    })();
   }, [disabled, onFilesUploaded]);
 
   const simulateUploadProgress = (fileId: string) => {
@@ -99,6 +144,7 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
     accept: {
       'application/zip': ['.zip'],
       'text/markdown': ['.md'],
+      'text/plain': ['.txt'],
       'application/pdf': ['.pdf'],
       'application/rtf': ['.rtf'],
       'text/rtf': ['.rtf'],

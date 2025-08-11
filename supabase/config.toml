@@ -1,1 +1,7 @@
 project_id = "gcmslzzuxycztdlkprbm"
+
+[functions.process-notes-upload]
+verify_jwt = false
+
+[functions.chat-ask]
+verify_jwt = false

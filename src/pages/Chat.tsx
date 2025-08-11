@@ -2,8 +2,8 @@ import { useState } from "react";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { NotesUploader } from "@/components/upload/NotesUploader";
-
-
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Brain } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -106,13 +106,14 @@ const Chat = () => {
       {/* Header */}
 <header className="border-b bg-background/80 backdrop-blur-sm relative z-10">
   <div className="max-w-3xl mx-auto px-4 py-3">
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-soft">
           <Brain className="w-5 h-5 text-white" />
         </div>
         <h1 className="text-lg font-semibold">NeuroMate</h1>
       </div>
+      <ThemeToggle />
     </div>
   </div>
 </header>
@@ -121,9 +122,22 @@ const Chat = () => {
 <div className="flex-1 flex flex-col max-w-3xl mx-auto w-full px-4 relative z-10">
   {!hasUploadedNotes ? (
     <div className="flex-1 flex items-center justify-center py-8">
-      <div className="w-full max-w-3xl">
-        <NotesUploader onFilesUploaded={handleFilesUploaded} />
-      </div>
+      <Card className="w-full p-6 text-center shadow-soft bg-card/80">
+        <div className="w-12 h-12 rounded-lg bg-gradient-accent mx-auto mb-4 flex items-center justify-center">
+          <Brain className="w-6 h-6 text-primary" />
+        </div>
+        <h2 className="text-xl font-semibold mb-2">Upload your notes</h2>
+        <p className="text-sm text-muted-foreground mb-4">Start by uploading your Apple Notes.</p>
+        <Button
+          className="mb-4"
+          onClick={() => document.getElementById('uploader')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+        >
+          Upload notes
+        </Button>
+        <div id="uploader" className="mt-2">
+          <NotesUploader onFilesUploaded={handleFilesUploaded} />
+        </div>
+      </Card>
     </div>
   ) : (
     <>

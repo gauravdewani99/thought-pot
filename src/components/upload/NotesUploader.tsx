@@ -214,12 +214,22 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
             )} />
           </div>
           
-          <div>
-            <p className="text-sm text-muted-foreground">
-              Drop files or click to upload
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">
+              {isDragActive ? "Drop your Apple Notes here" : "Upload your Apple Notes"}
+            </h3>
+            <p className="text-muted-foreground">
+              Drag & drop or click to upload .zip, .md, .pdf, .rtf files and images
             </p>
           </div>
 
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Badge variant="secondary">.zip</Badge>
+            <Badge variant="secondary">.md</Badge>
+            <Badge variant="secondary">.pdf</Badge>
+            <Badge variant="secondary">.rtf</Badge>
+            <Badge variant="secondary">images</Badge>
+          </div>
         </div>
       </Card>
 

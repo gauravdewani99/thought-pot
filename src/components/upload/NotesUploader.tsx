@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Upload, 
   FileText, 
   Archive, 
   Image as ImageIcon, 
@@ -139,7 +138,7 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
     setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getInputProps, open } = useDropzone({
     onDrop,
     accept: {
       'application/zip': ['.zip'],
@@ -150,7 +149,9 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
       'text/rtf': ['.rtf'],
       'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.bmp']
     },
-    disabled
+    disabled,
+    noClick: true,
+    noDrag: true
   });
 
   const formatFileSize = (bytes: number) => {
@@ -194,42 +195,12 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
 
   return (
     <div className="space-y-6">
-      <Card
-        {...getRootProps()}
-        className={cn(
-          "p-8 border-2 border-dashed transition-all cursor-pointer shadow-soft hover:shadow-medium",
-          isDragActive && "border-primary bg-accent/50",
-          disabled && "opacity-50 cursor-not-allowed"
-        )}
-      >
+      <Card className="p-6 shadow-soft">
         <input {...getInputProps()} />
-        <div className="flex flex-col items-center text-center space-y-4">
-          <div className={cn(
-            "w-16 h-16 rounded-full bg-gradient-accent flex items-center justify-center",
-            isDragActive && "bg-gradient-primary"
-          )}>
-            <Upload className={cn(
-              "w-8 h-8 text-muted-foreground",
-              isDragActive && "text-white"
-            )} />
-          </div>
-          
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">
-              {isDragActive ? "Drop your Apple Notes here" : "Upload your Apple Notes"}
-            </h3>
-            <p className="text-muted-foreground">
-              Drag & drop or click to upload .zip, .md, .pdf, .rtf files and images
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2 justify-center">
-            <Badge variant="secondary">.zip</Badge>
-            <Badge variant="secondary">.md</Badge>
-            <Badge variant="secondary">.pdf</Badge>
-            <Badge variant="secondary">.rtf</Badge>
-            <Badge variant="secondary">images</Badge>
-          </div>
+        <div className="flex items-center justify-center">
+          <Button onClick={open} disabled={disabled}>
+            Upload files
+          </Button>
         </div>
       </Card>
 

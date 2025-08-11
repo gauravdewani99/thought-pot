@@ -121,17 +121,7 @@ const Chat = () => {
           <Brain className="w-6 h-6 text-primary" />
         </div>
         <h2 className="text-xl font-semibold mb-2">Talk to your Apple Notes. </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          </p>
-        <Button className="mb-4" onClick={() => document.getElementById('uploader')?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          })}>
-          Upload notes
-        </Button>
-        <div id="uploader" className="mt-2">
-          <NotesUploader onFilesUploaded={handleFilesUploaded} />
-        </div>
+        <NotesUploader onFilesUploaded={handleFilesUploaded} />
       </Card>
     </div> : <>
       {messages.length === 0 ? <div className="flex-1 flex items-center justify-center p-4">

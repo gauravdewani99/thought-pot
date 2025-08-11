@@ -8,7 +8,6 @@ import { Card } from "@/components/ui/card";
 import { Brain } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-
 interface Message {
   id: string;
   content: string;
@@ -21,13 +20,13 @@ interface Message {
   }>;
   timestamp: Date;
 }
-
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [hasUploadedNotes, setHasUploadedNotes] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const getClientId = () => {
     let id = localStorage.getItem('demo_client_id');
     if (!id) {
@@ -36,33 +35,34 @@ const Chat = () => {
     }
     return id;
   };
-
   const handleSendMessage = async (content: string) => {
     if (!hasUploadedNotes) {
       toast({
         title: "Upload your notes first",
         description: "Please upload your Apple Notes before asking questions.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     const userMessage: Message = {
       id: Date.now().toString(),
       content,
       isUser: true,
-      timestamp: new Date(),
+      timestamp: new Date()
     };
-
     setMessages(prev => [...prev, userMessage]);
     setIsStreaming(true);
-
     try {
-      const { data, error } = await supabase.functions.invoke('chat-ask', {
-        body: { clientId: getClientId(), question: content },
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('chat-ask', {
+        body: {
+          clientId: getClientId(),
+          question: content
+        }
       });
       if (error) throw error;
-
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: data?.answer || "I couldn't generate an answer.",
@@ -71,40 +71,35 @@ const Chat = () => {
           noteId: s.noteId,
           title: s.title,
           snippet: s.snippet,
-          folder: s.folder,
+          folder: s.folder
         })),
-        timestamp: new Date(),
+        timestamp: new Date()
       };
-
       setMessages(prev => [...prev, aiMessage]);
     } catch (err: any) {
       console.error('chat-ask error', err);
       toast({
         title: "Chat error",
         description: err.message || "Failed to get an answer.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsStreaming(false);
     }
   };
-
   const handleFilesUploaded = (files: File[]) => {
     setHasUploadedNotes(true);
     toast({
       title: "Files uploaded successfully",
-      description: `${files.length} file(s) are being processed and indexed.`,
+      description: `${files.length} file(s) are being processed and indexed.`
     });
   };
-
   const handleStopStreaming = () => {
     setIsStreaming(false);
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-secondary flex flex-col relative">
+  return <div className="min-h-screen bg-gradient-secondary flex flex-col relative">
       {/* Header */}
-<header className="border-b bg-background/80 backdrop-blur-sm relative z-10">
+    <header className="border-b bg-background/80 backdrop-blur-sm relative z-10">
   <div className="max-w-3xl mx-auto px-4 py-3">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -116,62 +111,40 @@ const Chat = () => {
       <ThemeToggle />
     </div>
   </div>
-</header>
+    </header>
 
       {/* Main Content */}
-<div className="flex-1 flex flex-col max-w-3xl mx-auto w-full px-4 relative z-10">
-  {!hasUploadedNotes ? (
-    <div className="flex-1 flex items-center justify-center py-8">
+    <div className="flex-1 flex flex-col max-w-3xl mx-auto w-full px-4 relative z-10">
+  {!hasUploadedNotes ? <div className="flex-1 flex items-center justify-center py-8">
       <Card className="w-full p-6 text-center shadow-soft bg-card/80">
         <div className="w-12 h-12 rounded-lg bg-gradient-accent mx-auto mb-4 flex items-center justify-center">
           <Brain className="w-6 h-6 text-primary" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">Upload your notes</h2>
-        <p className="text-sm text-muted-foreground mb-4">Start by uploading your Apple Notes.</p>
-        <Button
-          className="mb-4"
-          onClick={() => document.getElementById('uploader')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-        >
+        <h2 className="text-xl font-semibold mb-2">Talk to your Apple Notes. </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          </p>
+        <Button className="mb-4" onClick={() => document.getElementById('uploader')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          })}>
           Upload notes
         </Button>
         <div id="uploader" className="mt-2">
           <NotesUploader onFilesUploaded={handleFilesUploaded} />
         </div>
       </Card>
-    </div>
-  ) : (
-    <>
-      {messages.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center p-4">
+    </div> : <>
+      {messages.length === 0 ? <div className="flex-1 flex items-center justify-center p-4">
           <Card className="w-full p-6 text-center shadow-soft bg-card/80">
             <h2 className="text-lg font-semibold mb-2">Ask about your notes</h2>
             <p className="text-sm text-muted-foreground">Type a question below to begin.</p>
           </Card>
-        </div>
-      ) : (
-        <div className="flex-1 overflow-y-auto">
-          {messages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              message={message.content}
-              isUser={message.isUser}
-              sources={message.sources}
-              isStreaming={message.id === messages[messages.length - 1]?.id && isStreaming}
-            />
-          ))}
-        </div>
-      )}
-    </>
-  )}
-  <ChatInput
-    onSendMessage={handleSendMessage}
-    isStreaming={isStreaming}
-    onStopStreaming={handleStopStreaming}
-    disabled={!hasUploadedNotes}
-  />
-</div>
+        </div> : <div className="flex-1 overflow-y-auto">
+          {messages.map(message => <ChatMessage key={message.id} message={message.content} isUser={message.isUser} sources={message.sources} isStreaming={message.id === messages[messages.length - 1]?.id && isStreaming} />)}
+        </div>}
+    </>}
+  <ChatInput onSendMessage={handleSendMessage} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} disabled={!hasUploadedNotes} />
     </div>
-  );
+    </div>;
 };
-
 export default Chat;

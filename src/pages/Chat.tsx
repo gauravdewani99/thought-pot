@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { NotesUploader } from "@/components/upload/NotesUploader";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Brain } from "lucide-react";
@@ -106,14 +106,13 @@ const Chat = () => {
       {/* Header */}
 <header className="border-b bg-background/80 backdrop-blur-sm relative z-10">
   <div className="max-w-3xl mx-auto px-4 py-3">
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-center">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-soft">
           <Brain className="w-5 h-5 text-white" />
         </div>
         <h1 className="text-lg font-semibold">NeuroMate</h1>
       </div>
-      <ThemeToggle />
     </div>
   </div>
 </header>

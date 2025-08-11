@@ -4,18 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Upload, 
-  FileText, 
-  Archive, 
-  Image as ImageIcon, 
-  CheckCircle, 
-  AlertCircle,
-  X 
-} from "lucide-react";
+import { Upload, FileText, Archive, Image as ImageIcon, CheckCircle, AlertCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-
 interface UploadedFile {
   id: string;
   name: string;
@@ -24,15 +15,15 @@ interface UploadedFile {
   status: 'uploading' | 'processing' | 'completed' | 'error';
   progress: number;
 }
-
 interface NotesUploaderProps {
   onFilesUploaded: (files: File[]) => void;
   disabled?: boolean;
 }
-
-export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps) => {
+export const NotesUploader = ({
+  onFilesUploaded,
+  disabled
+}: NotesUploaderProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-
   const getClientId = () => {
     let id = localStorage.getItem('demo_client_id');
     if (!id) {
@@ -41,63 +32,54 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
     }
     return id;
   };
-
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (disabled) return;
-
-    const newFiles: UploadedFile[] = acceptedFiles.map((file) => ({
+    const newFiles: UploadedFile[] = acceptedFiles.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       name: file.name,
       size: file.size,
       type: file.type,
       status: 'uploading',
-      progress: 0,
+      progress: 0
     }));
-
     setUploadedFiles(prev => [...prev, ...newFiles]);
 
     // Simulate upload progress visually while processing on the server
-    newFiles.forEach((file) => {
+    newFiles.forEach(file => {
       simulateUploadProgress(file.id);
     });
-
     (async () => {
       try {
-        const filesPayload = await Promise.all(
-          acceptedFiles
-            .filter((f) => (f.type && f.type.startsWith('text')) || f.name.toLowerCase().endsWith('.md') || f.name.toLowerCase().endsWith('.txt'))
-            .map(async (f) => ({
-              name: f.name,
-              type: f.type || 'text/plain',
-              content: await f.text(),
-            }))
-        );
-
-        const { data, error } = await supabase.functions.invoke('process-notes-upload', {
-          body: { clientId: getClientId(), files: filesPayload },
+        const filesPayload = await Promise.all(acceptedFiles.filter(f => f.type && f.type.startsWith('text') || f.name.toLowerCase().endsWith('.md') || f.name.toLowerCase().endsWith('.txt')).map(async f => ({
+          name: f.name,
+          type: f.type || 'text/plain',
+          content: await f.text()
+        })));
+        const {
+          data,
+          error
+        } = await supabase.functions.invoke('process-notes-upload', {
+          body: {
+            clientId: getClientId(),
+            files: filesPayload
+          }
         });
         if (error) throw error;
-
-        setUploadedFiles(prev =>
-          prev.map(f => newFiles.find(nf => nf.id === f.id)
-            ? { ...f, status: 'completed', progress: 100 }
-            : f
-          )
-        );
-
+        setUploadedFiles(prev => prev.map(f => newFiles.find(nf => nf.id === f.id) ? {
+          ...f,
+          status: 'completed',
+          progress: 100
+        } : f));
         onFilesUploaded(acceptedFiles);
       } catch (e) {
         console.error('process-notes-upload error', e);
-        setUploadedFiles(prev =>
-          prev.map(f => newFiles.find(nf => nf.id === f.id)
-            ? { ...f, status: 'error' }
-            : f
-          )
-        );
+        setUploadedFiles(prev => prev.map(f => newFiles.find(nf => nf.id === f.id) ? {
+          ...f,
+          status: 'error'
+        } : f));
       }
     })();
   }, [disabled, onFilesUploaded]);
-
   const simulateUploadProgress = (fileId: string) => {
     let progress = 0;
     const interval = setInterval(() => {
@@ -105,41 +87,35 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
       if (progress >= 100) {
         progress = 100;
         clearInterval(interval);
-        setUploadedFiles(prev => 
-          prev.map(f => 
-            f.id === fileId 
-              ? { ...f, status: 'processing', progress: 100 }
-              : f
-          )
-        );
-        
+        setUploadedFiles(prev => prev.map(f => f.id === fileId ? {
+          ...f,
+          status: 'processing',
+          progress: 100
+        } : f));
+
         // Simulate processing
         setTimeout(() => {
-          setUploadedFiles(prev => 
-            prev.map(f => 
-              f.id === fileId 
-                ? { ...f, status: 'completed' }
-                : f
-            )
-          );
+          setUploadedFiles(prev => prev.map(f => f.id === fileId ? {
+            ...f,
+            status: 'completed'
+          } : f));
         }, 2000);
       } else {
-        setUploadedFiles(prev => 
-          prev.map(f => 
-            f.id === fileId 
-              ? { ...f, progress }
-              : f
-          )
-        );
+        setUploadedFiles(prev => prev.map(f => f.id === fileId ? {
+          ...f,
+          progress
+        } : f));
       }
     }, 200);
   };
-
   const removeFile = (fileId: string) => {
     setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
   };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive
+  } = useDropzone({
     onDrop,
     accept: {
       'application/zip': ['.zip'],
@@ -152,7 +128,6 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
     },
     disabled
   });
-
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -160,7 +135,6 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
-
   const getFileIcon = (filename: string) => {
     const ext = filename.split('.').pop()?.toLowerCase();
     switch (ext) {
@@ -180,7 +154,6 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
         return <FileText className="w-4 h-4" />;
     }
   };
-
   const getStatusIcon = (status: UploadedFile['status']) => {
     switch (status) {
       case 'completed':
@@ -191,36 +164,17 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
         return null;
     }
   };
-
-  return (
-    <div className="space-y-6">
-      <Card
-        {...getRootProps()}
-        className={cn(
-          "p-8 border-2 border-dashed transition-all cursor-pointer shadow-soft hover:shadow-medium",
-          isDragActive && "border-primary bg-accent/50",
-          disabled && "opacity-50 cursor-not-allowed"
-        )}
-      >
+  return <div className="space-y-6">
+      <Card {...getRootProps()} className={cn("p-8 border-2 border-dashed transition-all cursor-pointer shadow-soft hover:shadow-medium", isDragActive && "border-primary bg-accent/50", disabled && "opacity-50 cursor-not-allowed")}>
         <input {...getInputProps()} />
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className={cn(
-            "w-16 h-16 rounded-full bg-gradient-accent flex items-center justify-center",
-            isDragActive && "bg-gradient-primary"
-          )}>
-            <Upload className={cn(
-              "w-8 h-8 text-muted-foreground",
-              isDragActive && "text-white"
-            )} />
+          <div className={cn("w-16 h-16 rounded-full bg-gradient-accent flex items-center justify-center", isDragActive && "bg-gradient-primary")}>
+            <Upload className={cn("w-8 h-8 text-muted-foreground", isDragActive && "text-white")} />
           </div>
           
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">
-              {isDragActive ? "Drop your Apple Notes here" : "Upload your Apple Notes"}
-            </h3>
-            <p className="text-muted-foreground">
-              Drag & drop or click to upload .zip, .md, .pdf, .rtf files and images
-            </p>
+            
+            <p className="text-muted-foreground"></p>
           </div>
 
           <div className="flex flex-wrap gap-2 justify-center">
@@ -233,12 +187,10 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
         </div>
       </Card>
 
-      {uploadedFiles.length > 0 && (
-        <Card className="p-6 shadow-soft">
+      {uploadedFiles.length > 0 && <Card className="p-6 shadow-soft">
           <h4 className="font-semibold mb-4">Uploaded Files</h4>
           <div className="space-y-3">
-            {uploadedFiles.map((file) => (
-              <div key={file.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+            {uploadedFiles.map(file => <div key={file.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                 {getFileIcon(file.name)}
                 
                 <div className="flex-1 min-w-0">
@@ -246,12 +198,7 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
                     <p className="text-sm font-medium truncate">{file.name}</p>
                     <div className="flex items-center gap-2">
                       {getStatusIcon(file.status)}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFile(file.id)}
-                        className="h-6 w-6 p-0"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => removeFile(file.id)} className="h-6 w-6 p-0">
                         <X className="w-3 h-3" />
                       </Button>
                     </div>
@@ -266,15 +213,10 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
                     </Badge>
                   </div>
                   
-                  {(file.status === 'uploading' || file.status === 'processing') && (
-                    <Progress value={file.progress} className="mt-2 h-1" />
-                  )}
+                  {(file.status === 'uploading' || file.status === 'processing') && <Progress value={file.progress} className="mt-2 h-1" />}
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
-        </Card>
-      )}
-    </div>
-  );
+        </Card>}
+    </div>;
 };

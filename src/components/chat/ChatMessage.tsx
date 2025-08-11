@@ -21,7 +21,7 @@ interface ChatMessageProps {
 
 export const ChatMessage = ({ message, isUser, sources, isStreaming }: ChatMessageProps) => {
   return (
-    <div className={cn("flex gap-4 p-6", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("flex gap-4 p-6 animate-fade-in", isUser ? "justify-end" : "justify-start")}>
       {!isUser && (
         <Avatar className="w-8 h-8 shrink-0">
           <AvatarFallback className="bg-gradient-primary text-white">
@@ -32,7 +32,7 @@ export const ChatMessage = ({ message, isUser, sources, isStreaming }: ChatMessa
       
       <div className={cn("max-w-[70%] space-y-3", isUser && "order-last")}>
         <Card className={cn(
-          "p-4 shadow-soft",
+          "p-4 shadow-soft hover-scale transition-all duration-200",
           isUser 
             ? "bg-chat-user text-chat-user-foreground ml-auto" 
             : "bg-chat-ai text-chat-ai-foreground"
@@ -46,14 +46,15 @@ export const ChatMessage = ({ message, isUser, sources, isStreaming }: ChatMessa
         </Card>
 
         {sources && sources.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-2 animate-fade-in">
             <p className="text-xs text-muted-foreground font-medium">Sources from your Notes:</p>
             <div className="flex flex-wrap gap-2">
               {sources.map((source) => (
                 <Badge
                   key={source.noteId}
                   variant="secondary"
-                  className="flex items-center gap-2 p-2 shadow-soft hover:shadow-medium transition-shadow cursor-pointer"
+                  className="flex items-center gap-2 p-2 shadow-soft hover:shadow-medium transition-all cursor-pointer hover-scale animate-scale-in"
+                  style={{ animationDelay: `${Math.random() * 0.3}s` }}
                 >
                   <FileText className="w-3 h-3" />
                   <span className="font-medium">{source.title}</span>

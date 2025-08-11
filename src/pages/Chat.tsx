@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { NotesUploader } from "@/components/upload/NotesUploader";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { AnimatedOrb, ShimmerEffect } from "@/components/ui/animated-elements";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -88,13 +90,34 @@ const Chat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-secondary flex flex-col">
+    <div className="min-h-screen bg-gradient-secondary flex flex-col relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <AnimatedOrb 
+        variant="primary" 
+        size="lg" 
+        className="top-20 left-10 animate-float opacity-30" 
+        style={{ animationDelay: "0s" }}
+      />
+      <AnimatedOrb 
+        variant="accent" 
+        size="md" 
+        className="top-60 right-20 animate-float opacity-20" 
+        style={{ animationDelay: "2s" }}
+      />
+      <AnimatedOrb 
+        variant="secondary" 
+        size="sm" 
+        className="bottom-40 left-1/3 animate-float opacity-25" 
+        style={{ animationDelay: "4s" }}
+      />
+      
+      <ShimmerEffect className="absolute inset-0 pointer-events-none" />
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm shadow-soft">
+      <header className="border-b bg-background/80 backdrop-blur-sm shadow-soft relative z-10">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-medium hover-scale">
                 <Brain className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -105,24 +128,27 @@ const Chat = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-accent">
-                <Sparkles className="w-3 h-3 mr-1" />
-                GPT-5 Thinking
-              </Badge>
-              {hasUploadedNotes && (
-                <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
-                  <FileText className="w-3 h-3 mr-1" />
-                  Notes Indexed
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-accent hover-scale">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  GPT-5 Thinking
                 </Badge>
-              )}
+                {hasUploadedNotes && (
+                  <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800 hover-scale animate-fade-in">
+                    <FileText className="w-3 h-3 mr-1" />
+                    Notes Indexed
+                  </Badge>
+                )}
+              </div>
+              <ThemeToggle />
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex max-w-6xl mx-auto w-full">
+      <div className="flex-1 flex max-w-6xl mx-auto w-full relative z-10">
         {/* Upload Panel */}
         {!hasUploadedNotes && (
           <div className="w-80 border-r bg-background/50 backdrop-blur-sm p-6">
@@ -139,10 +165,10 @@ const Chat = () => {
         {/* Chat Area */}
         <div className="flex-1 flex flex-col">
           {messages.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center p-6">
-              <Card className="max-w-2xl p-8 text-center shadow-medium">
-                <div className="w-16 h-16 rounded-full bg-gradient-accent mx-auto mb-6 flex items-center justify-center">
-                  <Brain className="w-8 h-8 text-primary" />
+            <div className="flex-1 flex items-center justify-center p-6 relative">
+              <Card className="max-w-2xl p-8 text-center shadow-medium backdrop-blur-sm bg-card/80 animate-scale-in">
+                <div className="w-16 h-16 rounded-full bg-gradient-accent mx-auto mb-6 flex items-center justify-center shadow-soft hover-scale">
+                  <Brain className="w-8 h-8 text-primary animate-float" />
                 </div>
                 <h2 className="text-2xl font-bold mb-4">
                   Welcome to your Apple Notes Assistant
@@ -154,15 +180,17 @@ const Chat = () => {
                 </p>
                 
                 {hasUploadedNotes && (
-                  <div className="flex flex-wrap gap-2 justify-center">
+                  <div className="flex flex-wrap gap-2 justify-center animate-fade-in">
                     <Button 
                       variant="outline" 
+                      className="hover-scale"
                       onClick={() => handleSendMessage("What are my recent project ideas?")}
                     >
                       "What are my recent project ideas?"
                     </Button>
                     <Button 
                       variant="outline"
+                      className="hover-scale"
                       onClick={() => handleSendMessage("Summarize my meeting notes")}
                     >
                       "Summarize my meeting notes"

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { NotesUploader } from "@/components/upload/NotesUploader";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Brain, ExternalLink } from "lucide-react";
@@ -108,17 +109,18 @@ const Chat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-secondary flex flex-col relative">
+    <div className="min-h-screen bg-gradient-secondary flex flex-col relative transition-colors duration-300">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm relative z-10">
+      <header className="border-b bg-background/80 backdrop-blur-sm relative z-10 transition-colors duration-300">
         <div className="max-w-3xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-soft">
+              <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-soft transition-transform duration-200 hover:scale-105">
                 <Brain className="w-5 h-5 text-white" />
               </div>
               <h1 className="text-lg font-semibold">Thought Pot</h1>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -127,8 +129,8 @@ const Chat = () => {
       <div className="flex-1 flex flex-col max-w-3xl mx-auto w-full px-4 relative z-10">
         {!hasUploadedNotes ? (
           <div className="flex-1 flex items-center justify-center py-8">
-            <Card className="w-full p-6 text-center shadow-soft bg-card/80">
-              <div className="w-12 h-12 rounded-lg bg-gradient-accent mx-auto mb-4 flex items-center justify-center">
+            <Card className="w-full p-6 text-center shadow-soft bg-card/80 backdrop-blur-sm animate-fade-in transition-all duration-300 hover:shadow-medium">
+              <div className="w-12 h-12 rounded-lg bg-gradient-accent mx-auto mb-4 flex items-center justify-center animate-float">
                 <Brain className="w-6 h-6 text-primary" />
               </div>
               <h2 className="text-xl font-semibold mb-4">Talk to your Apple Notes</h2>
@@ -166,7 +168,7 @@ const Chat = () => {
           <>
             {messages.length === 0 ? (
               <div className="flex-1 flex items-center justify-center p-4">
-                <Card className="w-full p-6 text-center shadow-soft bg-card/80">
+                <Card className="w-full p-6 text-center shadow-soft bg-card/80 backdrop-blur-sm animate-scale-in">
                   <h2 className="text-lg font-semibold mb-2">Ask about your notes</h2>
                   <p className="text-sm text-muted-foreground">Type a question below to begin.</p>
                 </Card>

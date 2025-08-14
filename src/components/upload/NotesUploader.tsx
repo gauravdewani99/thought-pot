@@ -195,17 +195,17 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 shadow-soft">
+      <Card className="p-6 shadow-soft transition-all duration-300 hover:shadow-medium animate-fade-in">
         <input {...getInputProps()} />
         <div className="flex items-center justify-center">
-          <Button onClick={open} disabled={disabled}>
-            Upload files
+          <Button onClick={open} disabled={disabled} className="hover-scale">
+            Create Thought Pot
           </Button>
         </div>
       </Card>
 
       {uploadedFiles.length > 0 && (
-        <Card className="p-6 shadow-soft">
+        <Card className="p-6 shadow-soft transition-all duration-300 animate-scale-in">
           <h4 className="font-semibold mb-4">Uploaded Files</h4>
           <div className="space-y-3">
             {uploadedFiles.map((file) => (

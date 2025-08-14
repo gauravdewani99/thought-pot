@@ -84,6 +84,11 @@ export const NotesUploader = ({ onFilesUploaded, disabled }: NotesUploaderProps)
           )
         );
 
+        // Show success message
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('notes-processed-success'));
+        }, 500);
+
         onFilesUploaded(acceptedFiles);
       } catch (e) {
         console.error('process-notes-upload error', e);

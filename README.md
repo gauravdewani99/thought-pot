@@ -1,8 +1,10 @@
-# Welcome to your Lovable project
+# Welcome to Thought Pot
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/1bbd0df6-c58a-4334-8b04-3e0704d533ed
+Thought Pot is a conversational AI to unlock the treasures of your Apple Notes that have been lying dormant all along.
+
+**URL**: https://apple-mind-linker.lovable.app/
 
 ## How can I edit this code?
 
